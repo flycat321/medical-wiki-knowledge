@@ -1,637 +1,99 @@
-# 项目记忆文件
+# CLAUDE.md
 
-本文件供 Claude Code 自动读取，防止跨会话记忆丢失。
-**更新规则：每次做出重要决策或完成关键文档后，同步更新本文件。**
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
----
+## 项目概述
 
-## 当前主要项目：AR-HOUSE 商业化
+医疗建筑设计部（中建西北院）内部 Wiki 知识库，基于 BookStack + 自研审核排名系统，Docker Compose 一键部署。
 
-### 项目背景
+## 架构
 
-- **公司：** 西安零碳建筑科技有限公司
-- **产品：** AR-HOUSE 系列零碳可移动郊野酒店
-- **阶段：** 原型机/样板房已建成，核心技术成熟，正在推进商业化落地
-- **核心目标：** 自营旗舰 + 加盟扩张两条腿并行，找到第一批加盟商
-- **当前瓶颈：** 找到第一批合作运营方/加盟商落地
-
-### 产品核心壁垒（对外说的卖点）
-
-1. **离网能源系统**：光伏+储能，5天无日照仍可正常运行，无需接入电网
-2. **零污水排放**：微生物处理+内置储罐，选址不受环保审批制约
-3. **整机可移动**：政策有变可装车转移，资产不归零
-4. **五星配置**：Dolby Atmos 全景声、真木壁炉、全屋智能控制、工业级保温（-20°C~40°C）
-5. **工程师基因**：自主研发，非采购集成，竞对难以快速复制
-
-### 品牌定位
-
-- 品牌 Slogan：**"把五星酒店搬进无人区"**
-- 定位：第四类野奢（区别于营地木屋/帐篷集装箱/太空舱玻璃屋）
-- 价格锚点：高端（2,000元+/晚），不打价格战
-
----
-
-### 关键财务参数（已确认）
-
-| 参数 | 数值 | 备注 |
-|------|------|------|
-| 单套造价（含安装调试） | 60-80万元 | 用70万作对外基准报价 |
-| 制造成本 | 约45万/套 | 内部估算，未最终确认 |
-| 设备销售毛利 | 约25-35万/套 | 售价70万−成本45万 |
-| 日租金定位 | 1,500-3,000元/晚 | 基准测算用2,000元 |
-| 基准入住率假设 | 65% | |
-| 年运营费用 | 约10万/套/年 | 含人工、耗材、佣金、授权费 |
-| **基准情景年净收入** | **约36.8万元/套** | |
-| **基准情景回收周期** | **不足2年** | |
-| 盈亏平衡入住率 | 46% | 日租2,000元时 |
-| 5年累计净收益 | 约114万（超投入160%） | 基准情景 |
-| 品牌授权年费 | 营收6% 与 4万/套/年 取高 | 年付 |
-| SaaS平台年费 | 0.8万/套/年 | 能耗监控+智能管控 |
-
-### 三情景对比
-
-| 情景 | 日租 | 入住率 | 年净收入 | 70万回收周期 |
-|------|------|-------|---------|------------|
-| 保守 | 1,500元 | 50% | 15.0万 | 5.3年 |
-| **基准** | **2,000元** | **65%** | **36.8万** | **1.9年** |
-| 乐观 | 2,800元 | 75% | 67.6万 | 0.9年 |
-
----
-
-### 已交付文档
-
-**存放路径：** `/Users/guogaoliang/Desktop/AR-HOUSE商业化/`
-
-| 文件 | 核心内容 | 状态 |
-|------|---------|------|
-| `01_财务投资回报测算.md` | 三情景ROI、5年累计模型、入住率敏感性分析、品牌方收益模型 | 完成 |
-| `02_加盟招商手册.md` | 品牌故事、五大壁垒、商业模式、合作方画像、8步加盟流程、FAQ（8问） | 完成 |
-| `03_加盟条款与合同框架.md` | 合作方资质、费用结构、品牌使用规范、双方权利义务、退出机制、早期合作方权益 | 草案，待律师审定 |
-| `04_PPT大纲.md` | 18张幻灯片逐页脚本，含视觉建议、演讲节奏（15-20分钟路演版） | 完成 |
-| `05_合作方一页纸/A_土地方版.md` | 面向村委/农场主/民宿主，核心逻辑：闲置土地变现金流，无需懂酒店 | 完成 |
-| `05_合作方一页纸/B_景区文旅版.md` | 面向景区运营商/文旅公司，核心逻辑：单日游客变过夜客，客单价×5 + ESG红利 | 完成 |
-| `05_合作方一页纸/C_投资人版.md` | 面向个人投资者/家族办公室，核心逻辑：2年回本、资产可移动、风险可量化 | 完成 |
-
-**相关技术文档（用户已有）：**
-- `~/Desktop/AR-house研发说明.docx / .pages`（产品技术文档原始版本）
-
----
-
-### 商业模式
-
-**模式A（主推）：设备销售 + 品牌授权**
-- 合作方：购买设备（60-80万）+ 年度授权费
-- 品牌方收入来源：设备毛利（一次性）+ 授权费+SaaS（持续）+ 集采返点
-
-**模式B：自营旗舰（1-2处标杆）**
-- 选址三条件：视觉极致（手机即可传播）+ 无市政配套 + 距核心城市2-3小时车程
-- 作用：品牌广告位 + 招商最有力的背书 + 真实营收数据来源
-
-**收入结构（品牌方，20套规模时）：**
-- 设备销售年毛利：视签约节奏而定（500-700万/年潜力）
-- 经常性收入：授权费+SaaS约 **70-100万/年**
-
----
-
-### 目标合作方优先级
-
-| 优先级 | 类型 | 关键价值交换 |
-|-------|------|------------|
-| ★★★ | 有闲置土地的村委/农场主/民宿主 | 他们有地，我们给设备+品牌+运营 |
-| ★★★ | 景区二次开发运营商/文旅公司 | 他们有客流，我们给产品差异化+零碳故事 |
-| ★★ | 个人投资者/家族办公室 | 他们有资金，我们给完整商业模式+品牌 |
-| ★★ | 乡村振兴/地产运营商 | 他们有大量土地，我们给场地差异化 |
-| ★ | 大型文旅集团 | 谈判周期长，放第二阶段 |
-
----
-
-### 加盟招商说服逻辑（三句话核心话术）
-
-1. **选址自由度**："普通酒店的地，AR-HOUSE 也能拿到；但 AR-HOUSE 能落的地，普通酒店永远进不去——那些地租金便宜10倍，溢价能力强5倍。"
-2. **资产可移动**："民宿/营地最大的噩梦是政策变化资产归零。AR-HOUSE 装车就走，资产跟着你，不跟着地。"
-3. **碳中和背书**："ESG是文旅的下一个门票。零碳酒店现在落地，就是提前锁住未来的优先审批和企业客户。"
-
----
-
-### 阶段路径
-
-**第一阶段（当前，0-12个月）：** 签约前5家加盟商 + 自营旗舰开业
-**第二阶段（12-36个月）：** 规模化至30-80套，引入A轮融资
-**第三阶段（3-5年）：** 平台化——统一预订平台 + 碳资产变现 + 企业客户 + 海外市场
-
----
-
-### 待完成任务
-
-**文档类（可由 Claude 协助）：**
-- [ ] 律师审定 `03_加盟条款与合同框架.md` 草案
-- [ ] 将 `04_PPT大纲.md` 制作成正式 PPT 文件（需设计软件）
-- [ ] 基于样板房真实数据更新财务模型（数据可得后）
-
-**线下执行类（需用户亲自推进）：**
-- [ ] 样板房专业摄影/摄像（PPT Slide 7 和招商的核心素材，目前是最大短板）
-- [ ] 旗舰自营点位候选地勘探（目标3-5个备选，评估维度：视觉/无市政/2-3小时车程）
-- [ ] 招募摄影师/KOL 以免费住宿换内容素材
-- [ ] 参加文旅展会（ITB China、文旅投融资峰会）
-
----
-
-### 尚待确认的信息
-
-| 问题 | 重要性 | 影响 |
-|------|-------|------|
-| 样板房在哪个城市？能否接待外部参观？ | 高 | 决定招商活动落点 |
-| 是否优先在大湾区落地第一个点位？ | 高 | 决定渠道资源使用方向 |
-| 制造成本精确数字 | 中 | 影响定价策略和毛利测算 |
-| 光伏+储能系统具体型号/品牌 | 低 | 对外宣传可用 |
-
----
-
-### 资源与渠道
-
-- 陕西住建厅政府关系（西北景区/文旅资源方向）
-- 大湾区路演人脉（投资人、粤港澳文旅资源）
-- 计划参展：ITB China、文旅投融资峰会
-
----
-
-### 写作风格说明（供续写文档参考）
-
-所有对外文档遵循以下原则：
-- **语气**：自信、务实、不浮夸；数据说话，不用"颠覆""革命"等虚词
-- **结构**：先讲痛点，再讲解法，再讲证明，最后推动行动
-- **数字**：核心数字大字突出（如"不足2年""36.8万"），让5米外也能看清
-- **免责**：所有财务相关文档末尾附"不构成收益承诺"声明
-
----
-
-## OpenClaw 基础设施配置
-
-### 关键账号与密码
-
-| 设备/服务 | 用户名 | 密码 |
-|---------|--------|------|
-| 群晖 NAS 虚拟机（局域网/Tailscale） | `guogaoliang` | `ggl2494498` |
-| 阿里云轻量服务器 | `admin` / `root` | `Ggl-2494498` |
-| Tailscale 账号 | `guogaoliang@gmail.com` | — |
-| honoursoft API Key | — | `sk-G26K7SUR9rc3TBirXWMLDbpNeUbHnsHCHhibDdUaEpUOhA2D` |
-| 阿里云百炼 API Key | — | `sk-sp-3aa69d6a3d4347068ca67af932f0dc76` |
-
-| 设备 | 用途 | SSH / 访问方式 |
-|------|------|--------------|
-| Mac 本地 | 日常操作 | 本地 |
-| 阿里云轻量服务器 | 企业微信、飞书机器人 | `ssh admin@123.57.106.145` 密码 `Ggl-2494498` |
-| 群晖 NAS 虚拟机 | 24小时常驻、招标采集、Telegram | `ssh guogaoliang@192.168.1.69`（局域网）/ `ssh guogaoliang@100.90.101.39`（外网 Tailscale） |
-
-### 群晖 NAS 虚拟机（重要）
-
-- **系统：** Ubuntu 22.04 Server
-- **局域网 IP：** `192.168.1.69`
-- **Tailscale IP：** `100.90.101.39`（外网直连，无需端口转发）
-- **SSH 密码：** `ggl2494498`
-- **Tailscale 账号：** `guogaoliang@gmail.com`
-
-#### 模型配置（2026-03-22 更新）
-- **主模型：** `dashscope/qwen3.5-plus`
-- **API Base：** `https://coding.dashscope.aliyuncs.com/v1`
-- **API Key：** `sk-sp-3aa69d6a3d4347068ca67af932f0dc76`
-- **备用 provider：** `honoursoft/claude-sonnet-4-6`（保留，余额不足暂不使用）
-
-#### Telegram Bot 配置（共3个）
-
-| 账号名 | Bot 显示名 | @username | Token 前缀 |
-|--------|-----------|-----------|-----------|
-| default | 建筑项目-NAS | @designmessage_bot | `8613337135:...` |
-| assistant | privateassistecho | @Echo1987Beijing_bot | `8482909307:...` |
-| nasassistant | **贴身助理-NAS** | @nasqunhuibot | `8733078158:...` |
-
-#### Watchdog 守护脚本（2026-03-22 新增）
-- **脚本：** `/home/guogaoliang/scripts/openclaw-watchdog.py`
-- **服务：** `~/.config/systemd/user/openclaw-watchdog.service`（开机自启）
-- **日志：** `/tmp/openclaw-watchdog.log`
-- **功能：** 每3分钟检测 Telegram 连通性；不通时自动遍历 mihomo 全部节点（共20个），切换可用节点并重启 openclaw-gateway
-
-#### 代理（mihomo）
-- 配置：`/etc/mihomo/config.yaml`
-- 本地端口：`7890`
-- 主要节点组：`快猫`（含香港/台湾/日本/新加坡等20个节点）
-
-#### 常用命令
-```bash
-# 外网 SSH
-ssh guogaoliang@100.90.101.39
-
-# 重启 OpenClaw
-systemctl --user restart openclaw-gateway
-
-# 查看日志
-tail -f /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log
-
-# 查看 Watchdog 日志
-tail -f /tmp/openclaw-watchdog.log
+```
+BookStack (PHP Wiki) ← 知识浏览、搜索、页面管理
+    ↕ REST API
+Flask 排名+审核服务 ← 提交审核流程、贡献排行榜、Excel导出
+    ↕
+SQLite (ranking.db) ← 提交记录、排名快照
+MySQL 8.0 ← BookStack 数据存储
 ```
 
----
+三个 Docker 容器：`bookstack`(端口6875)、`bookstack_db`、`bookstack_ranking`(端口6876)
 
-## 对话历史摘要
+## 目录结构
 
-### 第一次会话（2026-03-21）
+```
+bookstack/
+├── docker-compose.yml      # 三容器编排
+├── .env.example            # 环境变量模板
+├── backup.sh               # 每日备份脚本
+├── ranking/                # Flask 排名+审核服务
+│   ├── app.py              # 路由：排名、提交、审核、导出
+│   ├── models.py           # SQLite 模型：snapshots、submissions
+│   ├── calculator.py       # BookStack API 采集 → 字数计算
+│   ├── bookstack_client.py # BookStack REST API 封装
+│   ├── Dockerfile
+│   └── templates/          # Jinja2 页面模板
+└── migration/
+    └── migrate.py          # SQLite → BookStack 数据迁移
+docs/                       # 知识库 Markdown 源文件（88篇）
+```
 
-- 用户：郭高亮，西安零碳建筑科技有限公司，主营 AR-HOUSE 零碳可移动野奢酒店
-- Claude 进入 Plan 模式，输出完整商业化路径规划（品牌定位、商业模式、阶段路径、说服逻辑）
-- 规划内容已存入 Plan 文件，本次会话用户批准执行
-
-### 第二次会话（2026-03-22）
-
-**执行的任务：**
-1. 用户批准商业化规划，要求"实施计划"
-2. 确认造价区间：60-80万/套
-3. 创建 `01_财务投资回报测算.md`（含三情景、5年模型、敏感性分析）
-4. 创建 `02_加盟招商手册.md`（8章完整招商文档）
-5. 创建 `03_加盟条款与合同框架.md`（法律框架草案）
-6. 用户要求"建立配置文档防止记忆丢失"→ 创建本文件 `CLAUDE.md`
-7. 用户要求"招商手册转成PPT大纲"→ 创建 `04_PPT大纲.md`（18张幻灯片逐页脚本）
-8. 用户要求"继续"→ 更新 CLAUDE.md + 创建三版合作方一页纸（`05_合作方一页纸/`）
-
-### 第三次会话（2026-03-23）
-
-**执行的任务：**
-1. 排查 NAS OpenClaw 无响应 → 根因：Telegram Polling 3月14日因代理抖动停滞，重启恢复
-2. 部署 Watchdog 守护脚本，自动检测并切换可用代理节点
-3. NAS 模型从 `honoursoft/claude-sonnet-4-6` 切换为 `dashscope/qwen3.5-plus`
-4. 添加第二个 bot（@Echo1987Beijing_bot）到 NAS 配置
-5. 添加第三个 bot（@nasqunhuibot = 贴身助理-NAS）到 NAS 配置
-6. 安装 Tailscale，外网 SSH 地址：`100.90.101.39`
-7. 更新本配置文件
-
----
-
-## 个人简历信息
-
-### 基本信息
-
-| 项目 | 内容 |
-|------|------|
-| 姓名 | 郭高亮 |
-| 性别 | 男 |
-| 民族 | 汉 |
-| 出生年月 | 1986年8月4日 |
-| 党派 | 中共党员 |
-| 学历/学位 | 硕士 / 建筑学硕士 |
-| 职称 | 高级工程师 |
-| 专业专长 | 医疗康养建筑、博物馆建筑、超低能耗建筑设计 |
-| 工作单位 | 中国建筑西北设计研究院有限公司 第二建筑设计研究院 |
-| 行政职务 | 二院副总建筑师、医疗健康设计部部长 |
-| 通讯地址 | 西安市未央区文景路98号 |
-| 邮政编码 | 710000 |
-| 联系电话 | 02968519770 |
-| 手机 | 18629148762 |
-| 电子邮箱 | 354610696@qq.com |
-
-### 资质与学术兼职
-
-- **国家一级注册建筑师**
-- 西安建筑科技大学建筑学院硕士研究生校外合作导师
-- 西安交通大学人居学院特聘副教授
-- 中国建筑文化研究会医院建筑与文化分会常务理事
-- 西安市设计师协会建筑分委会理事
-- 中国医疗建筑设计青年领袖
-- 中国医疗建筑设计师联盟青年菁英汇成员
-- 美国 GATEWAY DECATHLON 零能耗建筑竞赛西安交通大学赛队指导导师
-- 第九届中国国际"互联网"大学生创新创业大赛产业赛道指导导师
-
-### 从业经历
-
-| 时间 | 单位及职务 |
-|------|----------|
-| 2011.7 — 2018.7 | 中国建筑西北设计研究院有限公司，所方案主创建筑师 |
-| 2018.7 — 2023.7 | 中国建筑西北设计研究院有限公司，院青年主创建筑师 |
-| 2023.7 — 至今 | 中国建筑西北设计研究院有限公司二院，二院副总建筑师、医疗健康设计部部长 |
-
-### 主要科技奖励
-
-| 奖项 | 备注 |
-|------|------|
-| 2024 国际人居环境可持续创新奖 金奖 | 排名第1 |
-| 陕西省土木建筑科学技术奖 青年科技奖 | — |
-| 陕西省土木建筑科技进步奖二等奖 | 排名第3 |
-| 陕西省建筑专项工程设计一等奖（多项） | 陕西省住建厅颁发 |
-| 陕西省建筑专项工程设计二等奖（多项） | 陕西省住建厅颁发 |
-| 中国建筑优秀勘察设计奖 | 陕西中医药博物馆，优秀方案设计二等奖 |
-
-### 个人荣誉
-
-- 2023 "西安国资好青年"称号
-- 2022 年度全国优秀医院建筑设计师
-- 2021 中国建筑西北区域总部青年五四奖章
-- 2020 中国年度医疗建筑新锐人物（入围）
-- 2020 中国医疗建筑设计青年领袖
-
-### 专利
-
-**发明专利：**
-- 用于装配式建筑安装平整度测量装置及方法（排名3）
-
-**实用新型专利：**
-- 一种装配式整体房屋墙体连接结构（排名1）
-- 一种单元式模块化成品装配房屋（排名1）
-- 一种成品房屋模块化单元连接结构（排名1）
-- 一种用于集成房屋的光伏板遮阳系统（排名3）
-- 一种新型布局的传染病房使用的传递窗结构（排名3）等
-
-### 主持/参与课题
-
-1. 《可移动装配式零能耗酒店产品研发》——陕西省住建厅/科技厅课题，**排名第1**
-2. 《基于服务供需机制的陕西省智慧养老建筑策划研究》——陕西省科技厅，排名第2
-3. 《装配式临时医学集中隔离点建筑设计研究》——陕西省科技厅，排名第5
-4. 《新时期现代医院护理单元"平疫结合"建筑空间研究》——陕西省科技厅，排名第3
-5. 《新时代博物馆建筑图集》——建筑工业出版社2019，排名第2
-6. 《智慧病区建设与运维管理指南》——图书，参编
-
-### 职业背景说明（与AR-HOUSE的关联）
-
-郭高亮在建筑设计主业之外，主导研发了可移动装配式零能耗郊野酒店（即AR-HOUSE前身），解决了野外持续用电和排污难题。该产品已收到约1200万订单，多家投资机构表达投资意向，目前正在推进产业化公司组建，未来三年预计年产值5000万元。
-
----
-
-## 其他项目/背景信息
-
-- 用户同时从事建筑设计业务（桌面有医院、景观设计文件）
-- 桌面有 `2025.10.10商业计划书(10.38).pdf`（早期版本商业计划书，可能有用）
-- 桌面有 `路演框架.docx / 路演框架（仅保留发言文字）.docx`（可能与本项目路演相关）
-
----
-
-*最后更新：2026-04-06（BookStack 知识库部署 + 审核提交系统 + 权限修复）*
-*由 Claude Code 自动生成并维护*
-
----
-
-## BookStack 知识库（2026-04-06 部署）
-
-### 架构说明
-- **平台：** BookStack（开源Wiki）+ 自研 Python 排名系统
-- **运行位置：** NAS Docker（与 OpenClaw 同机）
-- **用途：** 医疗建筑设计部内部知识库，约10人使用
-
-### 访问地址
-
-| 服务 | 地址 | 说明 |
-|------|------|------|
-| BookStack Wiki | `http://192.168.1.69:6875` | 知识库主站 |
-| 贡献排名系统 | `http://192.168.1.69:6876` | 字数排名页 |
-
-### 账号信息
-
-| 账号 | 凭据 |
-|------|------|
-| BookStack 管理员 | `admin@admin.com` / `password`（需修改） |
-| MySQL | `bookstack` / `BookStack2026!Secure` |
-| MySQL root | `MySQL2026!Root` |
-| BookStack API Token | ID: `wiki_token_2026` / Secret: `Rk9pZmF3V3hNbk5zWkdGamFXUnNZUT09` |
-
-### Docker 容器
+## 常用命令
 
 ```bash
-# 项目目录
-/home/guogaoliang/bookstack/
+# 部署
+cd bookstack && cp .env.example .env && docker compose up -d
 
-# 三个容器
-bookstack        # Wiki 主站 (端口 6875)
-bookstack_db     # MySQL 8.0
-bookstack_ranking # Python 排名服务 (端口 6876)
-
-# 常用命令
-cd /home/guogaoliang/bookstack
-sg docker -c 'docker compose ps'              # 查看状态
-sg docker -c 'docker compose restart bookstack' # 重启 Wiki
-sg docker -c 'docker compose logs -f ranking'   # 排名系统日志
+# 重建排名服务（修改代码后）
+docker compose build ranking && docker compose up -d ranking
 
 # 手动触发排名采集
-curl -X POST http://192.168.1.69:6876/api/collect
+curl -X POST http://localhost:6876/api/collect
 
-# 导出排名 Excel
-http://192.168.1.69:6876/export?period=month
+# 导入 docs/ 到 BookStack
+cd migration && python3 migrate.py --db /path/to/knowledge.db \
+  --url http://localhost:6875 --token-id TOKEN_ID --token-secret TOKEN_SECRET
 ```
 
-### 知识库内容结构
+## 关键页面路由（排名服务 app.py）
 
-**唯一书架：医疗建筑EPC设计管理手册**（shelf id=491）
-- 11 本书（第一章~第十章 + 附录），88 篇文章
-- 首页已设置为直接展示此书架内容
-- 空结构书架已全部清理
+| 路由 | 用途 |
+|------|------|
+| `/` | 排名首页（周/月/年/总） |
+| `/submit` | 普通用户提交修改 |
+| `/my-submissions?email=` | 查询个人提交记录 |
+| `/admin/review?pwd=` | 管理员审核面板 |
+| `/admin/approve/<id>` | 批准并发布到 BookStack |
+| `/admin/reject/<id>` | 驳回 |
+| `/leaderboard` | 贡献排行榜（基于审核通过的字数） |
+| `/export?period=` | 导出 Excel |
+| `/api/collect` | 手动触发数据采集 |
 
-### 数据源文件
-- **已导入：** `/Users/guogaoliang/Documents/claude-architect/docs/`（11个目录，88个md文件）
-- **旧系统：** `/Users/guogaoliang/Documents/claude-architect/epc-knowledge-base/`（FastAPI+SQLite，已弃用）
+## 业务流程
 
-### 备份
-- cron 每日 02:00 自动备份 MySQL + 上传文件
-- 备份目录：`/home/guogaoliang/bookstack/backups/`
-- 保留 30 天
+1. 普通用户在 BookStack 中为 **Viewer（只读）**，不能直接编辑
+2. 修改内容通过 `/submit` 提交，存入 `submissions` 表（status=pending）
+3. 管理员在 `/admin/review` 审核，批准后通过 BookStack API 自动发布
+4. 审核通过的字数计入贡献排行榜
 
-### 审核提交系统（排名服务扩展功能）
-
-**流程：** 普通用户提交修改 → 管理员审核 → 批准后自动发布到 BookStack
-
-| 页面 | 地址 | 用途 |
-|------|------|------|
-| 提交修改 | `http://192.168.1.69:6876/submit` | 普通用户提交内容修改 |
-| 我的提交 | `http://192.168.1.69:6876/my-submissions` | 查询个人提交状态 |
-| 审核面板 | `http://192.168.1.69:6876/admin/review?pwd=admin2026` | 管理员审核（批准/驳回） |
-| 贡献排行榜 | `http://192.168.1.69:6876/leaderboard` | 基于审核通过的字数排名 |
-
-**权限设计：**
-- 普通用户在 BookStack 中为 **Viewer（只读）** 角色，不能直接编辑
-- 所有修改必须通过提交系统，经管理员审核后才发布
-- 审核面板密码：`admin2026`（环境变量 `RANKING_ADMIN_PASS`）
-- 测试账号：`test@wiki.local` / `test1234`（Viewer 角色）
-
-### 排名系统技术细节
-- **技术栈：** Flask + APScheduler + SQLite
-- **采集频率：** 每 6 小时自动采集一次
-- **排名维度：** 本周 / 本月 / 本年 / 总排名（基于 BookStack 页面数据）
-- **贡献排行榜：** 基于审核通过的提交字数，独立于 BookStack 采集
-- **数据存储：** `/home/guogaoliang/bookstack/ranking_data/ranking.db`
-
-### 部署注意事项
-- NAS Docker 需要代理才能拉取镜像（已配置 `/etc/systemd/system/docker.service.d/proxy.conf` 指向 mihomo 7890）
-- BookStack 内部 `.env` 在 `/home/guogaoliang/bookstack/bookstack_data/www/.env`，docker-compose 环境变量不会自动覆盖它
-- `SESSION_SECURE_COOKIE=false` 必须设置（HTTP 环境），否则登出后 419 PAGE EXPIRED
-- `APP_KEY` 必须在 BookStack 内部 `.env` 中正确设置
-- MySQL 首次初始化在 NAS 上极慢（约 40 分钟），建议后续迁移到云服务器
-- 首页设置：数据库 `settings` 表中 `app-homepage-type=shelves`, `app-homepage=491`
-
----
-
-## OpenClaw 配置（2026-03-25 更新）
-
-### 架构说明
-- **运行位置：** NAS (192.168.1.69 / 100.90.101.39)
-- **弃用设备：** 阿里云服务器（已停止使用）
-- **机器人平台：** 只使用飞书（已弃用 Telegram、企业微信）
-
-### 飞书应用配置（4 个）
-
-| 应用名称 | App ID | App Secret | 用途 | DM 策略 |
-|---------|--------|-----------|------|--------|
-| private-assistant | cli_a93f18ffdfb8dbca | BbPZHLn2CRvEpawHWwsxD6ICbJy4y8nx | 私人助理 | pairing |
-| architect | cli_a93e70b69cb8dcd1 | r2M4qyloro22vuQ8WUU10bSJfoDswK62 | 建筑助手 | pairing |
-| ar-house | cli_a9328ebf2ab89bce | AURl4Wko9YSVrSDcIUmdad5F481gOqqS | AR-HOUSE 创业助手 | pairing |
-| policy-research | cli_a9340eda1e389cb3 | BPMRQZzsDfJTVlLAsX7nmfBWiSypntn8 | 政策研究 | open（允许所有人） |
-
-### Agent 配置（按场景分类）
-
-| Agent 名称 | 路径 | 用途 |
-|-----------|------|------|
-| private-assistant | `~/.openclaw/agents/private-assistant/` | 个人日程、备忘、日常问答 |
-| architect | `~/.openclaw/agents/architect/` | 建筑设计规范查询、案例参考、技术支持 |
-| ar-house | `~/.openclaw/agents/ar-house/` | 招商、财务测算、加盟咨询 |
-| policy-research | `~/.openclaw/agents/policy-research/` | 政策研究、招标信息采集 |
-
-### WebUI 控制台
-
-- **访问地址：** `http://192.168.1.69:18789`（局域网）或 `http://100.90.101.39:18789`（Tailscale 外网）
-- **认证 Token：** `ab4094871a9cc7c008fc26069455629c68c9815d520cb65c`
-- **功能：** 查看会话历史、调试机器人、管理配对设备
-
-### 模型配置
-- **主模型：** `dashscope/qwen3.5-plus`
-- **API Base：** `https://coding.dashscope.aliyuncs.com/v1`
-- **API Key：** `sk-sp-3aa69d6a3d4347068ca67af932f0dc76`
-
-### 常用命令
-```bash
-# SSH 连接 NAS
-ssh guogaoliang@192.168.1.69  # 局域网
-ssh guogaoliang@100.90.101.39  # Tailscale 外网
-
-# 重启 OpenClaw
-systemctl --user restart openclaw-gateway
-
-# 查看日志
-journalctl --user -u openclaw-gateway -n 50 --no-pager
-
-# WebUI 访问
-# 浏览器打开 http://192.168.1.69:18789
-
-# 飞书插件
-npm list -g @larksuite/openclaw-lark
-```
-
----
-
-## OpenClaw 核心配置文档（2026-03-25 知乎文章整理）
-
-### 一、智能体的"大脑"：7 个 MD 文件
-
-这 7 个文件位于 `~/.openclaw/workspace/`，决定 AI 的"智商"和"人格"：
-
-| 文件 | 作用 | 更新频率 |
-|------|------|---------|
-| `SOUL.md` | 灵魂 - 核心价值观和行为准则 | 偶尔 |
-| `IDENTITY.md` | 身份 - 名字、人设、口头禅 | 一次性 |
-| `USER.md` | 用户 - 偏好、习惯、背景 | 持续更新 |
-| `MEMORY.md` | 长期记忆 - 重要事件、决策、教训 | 持续更新 |
-| `HEARTBEAT.md` | 心跳 - 周期性主动任务 | 偶尔 |
-| `TOOLS.md` | 工具 - 本地配置的具体参数 | 偶尔 |
-| `AGENTS.md` | 使用指南 - 工作习惯和约定 | 偶尔 |
-
-### 二、OpenClaw 核心目录结构
+## BookStack API 认证
 
 ```
-~/.openclaw/
-├── openclaw.json        # 核心配置（模型、渠道、全局开关）
-├── agents.json          # 多 Agent 路由配置
-├── cron/                # 定时任务
-├── credentials/         # 敏感凭证
-├── devices/             # 配对设备
-├── extensions/          # 扩展插件
-├── identity/            # 身份认证
-├── logs/                # 运行日志
-├── memory/              # 会话记忆
-├── skills/              # 已安装技能
-├── agents/              # 各 Agent 独立配置
-└── workspace/           # 主工作区（7 个 MD 文件）
+Authorization: Token {token_id}:{token_secret}
 ```
 
-### 三、当前 NAS 配置状态（2026-03-25 确认）
+`bookstack_client.py` 封装了分页查询、CRUD 操作。
 
-**已完成：**
-- ✅ Mac 记忆文件合并到 NAS（`memory/mac_merged/`）
-- ✅ 阿里云记忆文件合并到 NAS（`memory/aliyun_merged/`）
-- ✅ 7 个核心 MD 文件已更新合并
-- ✅ 4 个飞书应用配置完成
-- ✅ 4 个按场景分类的 Agent 配置完成
-- ✅ WebUI 控制台启用（端口 18789）
-- ✅ 阿里云服务器已弃用
+## 部署注意事项
 
-**飞书机器人状态（4 个）：**
-- private-assistant → 私人助理（日常问答、日程、备忘）
-- architect → 建筑助手（医疗/博物馆/超低能耗建筑设计）
-- ar-house → AR-HOUSE 创业助手（招商、财务测算、加盟咨询）
-- policy-research → 政策研究（开放模式，允许所有人使用）
+- BookStack 内部 `.env` 在容器 `/config/www/.env`，docker-compose 环境变量**不会**自动覆盖它，首次部署需手动修改
+- `SESSION_SECURE_COOKIE=false` 必须设置（HTTP 环境），否则登出后 419
+- `APP_KEY` 必须正确设置，否则 CSRF 验证失败
+- 首页设置：数据库 `settings` 表 `app-homepage-type=shelves`, `app-homepage=491`
+- NAS Docker 需配置代理才能拉取镜像
 
----
+## 当前部署状态
 
-## 故障修复记录
-
-### 2026-03-28：飞书机器人跨天会话记忆丢失
-
-**症状：**
-- 隔天让机器人继续前一天的任务时，机器人表示"无法看到历史对话记录"
-- 会话上下文在跨天后丢失
-
-**根因：**
-1. OpenClaw 的记忆存储依赖 `memory/main.sqlite`（SQLite 数据库）和 `workspace/memory/*.md`（每日笔记）
-2. 机器人没有主动检索历史记忆的强制逻辑
-3. `dmScope: "per-channel-peer"` 配置虽然隔离了用户会话，但记忆检索依赖 agent 主动读取
-
-**解决方案：**
-1. **修改 `workspace/AGENTS.md`** — 添加强制记忆读取指令：
-   - Session 启动流程强制读取 `MEMORY.md` 和最近每日笔记
-   - 新增"跨天会话特别处理"章节，要求主动检索记忆
-   - 新增"记忆检索规则"，要求回答前先搜索记忆文件
-   - 新增"跨会话连续性"章节，指导机器人如何处理上下文断层
-
-2. **保持 `openclaw.json` 配置不变** — 尝试添加的 `memory` 和 `session.memoryRetention` 配置不被支持
-
-**文件位置：**
-- NAS: `~/.openclaw/workspace/AGENTS.md`
-- 配置：`~/.openclaw/openclaw.json`
-
-**验证方法：**
-- 隔天使用飞书机器人时，主动说"继续昨天的 XXX 任务"
-- 机器人应主动检索 `memory/` 目录并总结上下文
-
----
-
-### 2026-03-25：OpenClaw 无法连接
-
-**症状：**
-- 通过 Tailscale 和局域网 SSH 连接 NAS 后，OpenClaw Gateway 无响应
-- WebUI 无法访问
-
-**根因：**
-1. `openclaw.json` 中 `gateway.auth.mode` 配置为 `"none"`，但尝试绑定到 LAN
-2. OpenClaw 拒绝在无认证模式下绑定到非本地回环地址
-3. 服务陷入启动 - 失败 - 重启循环
-
-**解决方案：**
-```bash
-# 为网关添加认证 token
-# 修改 ~/.openclaw/openclaw.json，添加：
-"gateway": {
-  "auth": {
-    "mode": "token",
-    "token": "ab4094871a9cc7c008fc26069455629c68c9815d520cb65c"
-  }
-}
-
-# 重启服务
-systemctl --user restart openclaw-gateway
-```
-
-**验证：**
-- `curl http://192.168.1.69:18789/health` 返回 `{"ok":true,"status":"live"}`
-- 4 个飞书机器人 WebSocket 全部连接成功
+- **运行位置：** NAS (192.168.1.69) Docker
+- **知识库内容：** 1个书架、11本书（第一章~第十章+附录）、88篇文章
+- **计划：** 后续迁移到云服务器
