@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的提交记录</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, "PingFang SC", sans-serif; background: #f0f2f5; }
+        .header { background: linear-gradient(135deg, #1a73e8, #0d47a1); color: white; padding: 20px; text-align: center; }
+        .nav { padding: 12px 20px; background: white; border-bottom: 1px solid #eee; font-size: 13px; }
+        .nav a { color: #1a73e8; text-decoration: none; margin-right: 16px; }
+        .container { max-width: 800px; margin: 20px auto; padding: 0 16px; }
+        .search-box { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; display: flex; gap: 8px; }
+        .search-box input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; }
+        .search-box button { padding: 8px 16px; background: #1a73e8; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .card-title { font-weight: 600; }
+        .badge { padding: 2px 10px; border-radius: 12px; font-size: 12px; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-approved { background: #d4edda; color: #155724; }
+        .badge-rejected { background: #f8d7da; color: #721c24; }
+        .card-meta { font-size: 12px; color: #999; }
+        .card-stats { font-size: 13px; color: #666; margin-top: 4px; }
+        .empty { text-align: center; padding: 40px; color: #999; }
+    </style>
+</head>
+<body>
+    <div class="header"><h1>我的提交记录</h1></div>
+    <div class="nav">
+        <a href="/">排名</a>
+        <a href="/leaderboard">贡献榜</a>
+        <a href="/submit">提交修改</a>
+        <a href="/my-submissions">我的提交</a>
+    </div>
+    <div class="container">
+        <form class="search-box" method="GET" action="/my-submissions">
+            <input type="email" name="email" placeholder="输入你的邮箱查询提交记录" value="{{ email }}">
+            <button type="submit">查询</button>
+        </form>
+
+        {% if submissions %}
+        {% for s in submissions %}
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">#{{ s.id }} {{ s.title }}</span>
+                <span class="badge badge-{{ s.status }}">
+                    {% if s.status == 'pending' %}待审核{% elif s.status == 'approved' %}已通过{% else %}已驳回{% endif %}
+                </span>
+            </div>
+            <div class="card-stats">字数：{{ s.char_count }} | 目标页面：{{ s.target_page_name or '新增' }}</div>
+            <div class="card-meta">
+                提交于 {{ s.created_at[:16] }}
+                {% if s.reviewed_at %} · 审核于 {{ s.reviewed_at[:16] }}{% endif %}
+                {% if s.admin_comment %} · 审核意见：{{ s.admin_comment }}{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% elif email %}
+        <div class="empty">没有找到提交记录</div>
+        {% else %}
+        <div class="empty">请输入邮箱查询</div>
+        {% endif %}
+    </div>
+</body>
+</html>

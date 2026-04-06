@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>审核面板 - 管理员</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, "PingFang SC", sans-serif; background: #f0f2f5; }
+        .header { background: linear-gradient(135deg, #d32f2f, #b71c1c); color: white; padding: 20px; text-align: center; }
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 16px; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+        .tab { padding: 8px 16px; border-radius: 20px; border: 1px solid #ddd; background: white; text-decoration: none; color: #666; font-size: 13px; }
+        .tab.active { background: #d32f2f; color: white; border-color: #d32f2f; }
+        .section-title { font-size: 16px; font-weight: 600; margin: 24px 0 12px; }
+        .card { background: white; border-radius: 10px; padding: 16px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; }
+        .card-left { flex: 1; }
+        .card-title { font-weight: 600; font-size: 15px; }
+        .card-meta { font-size: 12px; color: #999; margin-top: 4px; }
+        .card-stats { font-size: 13px; color: #1a73e8; margin-top: 2px; }
+        .btn-review { padding: 6px 16px; background: #1a73e8; color: white; border: none; border-radius: 6px; text-decoration: none; font-size: 13px; }
+        .badge { padding: 2px 10px; border-radius: 12px; font-size: 11px; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-approved { background: #d4edda; color: #155724; }
+        .badge-rejected { background: #f8d7da; color: #721c24; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .stat-card { background: white; border-radius: 10px; padding: 16px; text-align: center; }
+        .stat-name { font-weight: 600; font-size: 15px; }
+        .stat-num { font-size: 28px; font-weight: 700; color: #1a73e8; margin: 4px 0; }
+        .stat-detail { font-size: 12px; color: #999; }
+        .empty { text-align: center; padding: 40px; color: #999; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>审核面板</h1>
+        <p>管理员专用 · 审核团队提交的知识修改</p>
+    </div>
+    <div class="container">
+        <div class="tabs">
+            <a href="/admin/review?pwd={{ pwd }}&status=pending" class="tab {% if status_filter == 'pending' %}active{% endif %}">
+                待审核
+            </a>
+            <a href="/admin/review?pwd={{ pwd }}&status=approved" class="tab {% if status_filter == 'approved' %}active{% endif %}">
+                已通过
+            </a>
+            <a href="/admin/review?pwd={{ pwd }}&status=rejected" class="tab {% if status_filter == 'rejected' %}active{% endif %}">
+                已驳回
+            </a>
+            <a href="/admin/review?pwd={{ pwd }}&status=all" class="tab {% if status_filter == 'all' %}active{% endif %}">
+                全部
+            </a>
+        </div>
+
+        {% if stats %}
+        <div class="section-title">团队贡献统计</div>
+        <div class="stats-grid">
+            {% for s in stats %}
+            <div class="stat-card">
+                <div class="stat-name">{{ s.user_name }}</div>
+                <div class="stat-num">{{ "{:,}".format(s.approved_chars or 0) }}</div>
+                <div class="stat-detail">已通过 {{ s.approved_count or 0 }} 篇 · 共提交 {{ s.total_submissions }} 篇</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="section-title">提交列表</div>
+        {% if submissions %}
+        {% for s in submissions %}
+        <div class="card">
+            <div class="card-left">
+                <div class="card-title">
+                    #{{ s.id }} {{ s.title }}
+                    <span class="badge badge-{{ s.status }}">
+                        {% if s.status == 'pending' %}待审核{% elif s.status == 'approved' %}已通过{% else %}已驳回{% endif %}
+                    </span>
+                </div>
+                <div class="card-stats">{{ s.user_name }} · {{ s.char_count }} 字 · 目标：{{ s.target_page_name or '新增页面' }}</div>
+                <div class="card-meta">{{ s.created_at[:16] }}</div>
+            </div>
+            {% if s.status == 'pending' %}
+            <a href="/admin/review/{{ s.id }}?pwd={{ pwd }}" class="btn-review">审核</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty">暂无{{ '待审核' if status_filter == 'pending' else '' }}提交</div>
+        {% endif %}
+    </div>
+</body>
+</html>

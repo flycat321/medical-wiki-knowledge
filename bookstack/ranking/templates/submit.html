@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>提交修改 - 医疗设计部知识库</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; color: #333; }
+        .header { background: linear-gradient(135deg, #1a73e8, #0d47a1); color: white; padding: 20px; text-align: center; }
+        .header h1 { font-size: 22px; }
+        .header p { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+        .container { max-width: 800px; margin: 20px auto; padding: 0 16px; }
+        .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px;
+            font-size: 14px; font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #1a73e8; outline: none; box-shadow: 0 0 0 2px rgba(26,115,232,0.15);
+        }
+        .form-group textarea { min-height: 300px; resize: vertical; }
+        .form-row { display: flex; gap: 16px; }
+        .form-row .form-group { flex: 1; }
+        .btn { padding: 12px 32px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .btn-primary { background: #1a73e8; color: white; }
+        .btn-primary:hover { background: #1557b0; }
+        .btn-back { background: #f0f2f5; color: #666; text-decoration: none; display: inline-block; }
+        .actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+        .hint { font-size: 12px; color: #999; margin-top: 4px; }
+        .nav { padding: 12px 20px; background: white; border-bottom: 1px solid #eee; font-size: 13px; }
+        .nav a { color: #1a73e8; text-decoration: none; margin-right: 16px; }
+        .char-count { text-align: right; font-size: 12px; color: #999; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>提交知识修改</h1>
+        <p>提交后由管理员审核，审核通过后发布到知识库</p>
+    </div>
+    <div class="nav">
+        <a href="/">排名</a>
+        <a href="/leaderboard">贡献榜</a>
+        <a href="/submit">提交修改</a>
+        <a href="/my-submissions">我的提交</a>
+    </div>
+    <div class="container">
+        <form method="POST" action="/submit" class="card">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>你的姓名 *</label>
+                    <input type="text" name="user_name" required placeholder="请输入真实姓名">
+                </div>
+                <div class="form-group">
+                    <label>邮箱（用于查询状态）</label>
+                    <input type="email" name="user_email" placeholder="可选，用于查询你的提交记录">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>修改类型</label>
+                <select name="submit_type" id="submitType" onchange="toggleTarget()">
+                    <option value="edit">修改现有页面</option>
+                    <option value="new">新增内容</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="targetPageGroup">
+                <label>目标页面</label>
+                <select name="target_page_id" id="targetPage" onchange="updatePageInfo()">
+                    <option value="">-- 选择要修改的页面 --</option>
+                    {% for p in pages %}
+                    <option value="{{ p.id }}" {% if page_id and p.id|string == page_id|string %}selected{% endif %}>
+                        {{ p.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <input type="hidden" name="target_page_name" id="targetPageName" value="{{ page_name }}">
+                <input type="hidden" name="target_book_name" id="targetBookName" value="{{ book_name }}">
+                <p class="hint">选择你要修改的知识库页面</p>
+            </div>
+
+            <div class="form-group">
+                <label>标题 *</label>
+                <input type="text" name="title" required placeholder="修改的标题或摘要说明">
+            </div>
+
+            <div class="form-group">
+                <label>内容 *</label>
+                <textarea name="content" id="contentArea" required
+                    placeholder="请输入修改后的完整内容（支持HTML格式）&#10;&#10;如果是修改现有页面，请粘贴修改后的完整页面内容。&#10;如果是新增内容，直接写新内容即可。"
+                    oninput="updateCount()"></textarea>
+                <div class="char-count">字数：<span id="charCount">0</span></div>
+            </div>
+
+            <div class="actions">
+                <a href="/" class="btn btn-back">返回</a>
+                <button type="submit" class="btn btn-primary">提交审核</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function toggleTarget() {
+            document.getElementById('targetPageGroup').style.display =
+                document.getElementById('submitType').value === 'edit' ? 'block' : 'none';
+        }
+        function updatePageInfo() {
+            var sel = document.getElementById('targetPage');
+            var opt = sel.options[sel.selectedIndex];
+            document.getElementById('targetPageName').value = opt.text.trim();
+        }
+        function updateCount() {
+            var text = document.getElementById('contentArea').value;
+            var clean = text.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+            document.getElementById('charCount').textContent = clean.length;
+        }
+    </script>
+</body>
+</html>

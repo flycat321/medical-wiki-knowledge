@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贡献排行榜 - 医疗设计部</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, "PingFang SC", sans-serif; background: #f0f2f5; }
+        .header { background: linear-gradient(135deg, #ff6f00, #e65100); color: white; padding: 24px; text-align: center; }
+        .header h1 { font-size: 24px; }
+        .header p { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+        .nav { padding: 12px 20px; background: white; border-bottom: 1px solid #eee; font-size: 13px; }
+        .nav a { color: #1a73e8; text-decoration: none; margin-right: 16px; }
+        .container { max-width: 800px; margin: 20px auto; padding: 0 16px; }
+        .podium { display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; }
+        .podium-item { background: white; border-radius: 16px; padding: 24px 20px; text-align: center; width: 200px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .podium-rank { font-size: 32px; margin-bottom: 4px; }
+        .podium-name { font-size: 18px; font-weight: 700; }
+        .podium-chars { font-size: 24px; font-weight: 700; color: #ff6f00; margin: 4px 0; }
+        .podium-detail { font-size: 12px; color: #999; }
+        .list-item { background: white; border-radius: 10px; padding: 14px 20px; margin-bottom: 8px; display: flex; align-items: center; }
+        .list-rank { width: 32px; font-weight: 700; color: #999; font-size: 16px; }
+        .list-name { flex: 1; font-weight: 600; }
+        .list-chars { font-size: 18px; font-weight: 700; color: #ff6f00; }
+        .list-detail { font-size: 12px; color: #999; margin-left: 8px; width: 120px; text-align: right; }
+        .empty { text-align: center; padding: 60px; color: #999; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>贡献排行榜</h1>
+        <p>基于审核通过的知识提交 · 字数统计</p>
+    </div>
+    <div class="nav">
+        <a href="/">排名</a>
+        <a href="/leaderboard">贡献榜</a>
+        <a href="/submit">提交修改</a>
+        <a href="/my-submissions">我的提交</a>
+    </div>
+    <div class="container">
+        {% if stats %}
+        <div class="podium">
+            {% for s in stats[:3] %}
+            <div class="podium-item">
+                <div class="podium-rank">{% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% else %}🥉{% endif %}</div>
+                <div class="podium-name">{{ s.user_name }}</div>
+                <div class="podium-chars">{{ "{:,}".format(s.approved_chars or 0) }}</div>
+                <div class="podium-detail">{{ s.approved_count or 0 }} 篇通过 / {{ s.total_submissions }} 篇提交</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% for s in stats[3:] %}
+        <div class="list-item">
+            <div class="list-rank">{{ loop.index + 3 }}</div>
+            <div class="list-name">{{ s.user_name }}</div>
+            <div class="list-chars">{{ "{:,}".format(s.approved_chars or 0) }} 字</div>
+            <div class="list-detail">{{ s.approved_count or 0 }} 篇 / {{ s.total_submissions }} 篇</div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty">
+            <div style="font-size: 48px; margin-bottom: 12px;">🏆</div>
+            <p>暂无贡献数据</p>
+            <p style="margin-top: 8px; font-size: 13px;">去 <a href="/submit">提交修改</a> 成为第一名！</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

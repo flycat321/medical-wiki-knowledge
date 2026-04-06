@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识贡献排名 - 医疗设计部</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+        .header h1 { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+        .header p { font-size: 14px; opacity: 0.85; }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .tab {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .tab:hover { border-color: #1a73e8; color: #1a73e8; }
+        .tab.active {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+        .container { max-width: 800px; margin: 20px auto; padding: 0 16px; }
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .toolbar .info { font-size: 13px; color: #888; }
+        .toolbar a {
+            font-size: 13px;
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        .ranking-list { list-style: none; }
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            transition: transform 0.15s;
+        }
+        .ranking-item:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+        .rank {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+        .rank-1 { background: linear-gradient(135deg, #FFD700, #FFA000); color: white; }
+        .rank-2 { background: linear-gradient(135deg, #C0C0C0, #9E9E9E); color: white; }
+        .rank-3 { background: linear-gradient(135deg, #CD7F32, #A0522D); color: white; }
+        .rank-other { background: #f0f2f5; color: #666; }
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1565c0;
+            margin-right: 14px;
+            flex-shrink: 0;
+        }
+        .info-block { flex: 1; }
+        .name { font-size: 16px; font-weight: 600; }
+        .meta { font-size: 12px; color: #999; margin-top: 2px; }
+        .stats {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .chars {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a73e8;
+        }
+        .chars-label { font-size: 11px; color: #999; }
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-icon { font-size: 48px; margin-bottom: 12px; }
+        .footer {
+            text-align: center;
+            padding: 24px;
+            font-size: 12px;
+            color: #bbb;
+        }
+        @media (max-width: 480px) {
+            .header h1 { font-size: 20px; }
+            .ranking-item { padding: 12px 14px; }
+            .chars { font-size: 17px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>知识贡献排名</h1>
+        <p>医疗建筑设计部 · 知识共享激励</p>
+    </div>
+
+    <div class="tabs">
+        <a href="?period=week" class="tab {% if period == 'week' %}active{% endif %}">本周</a>
+        <a href="?period=month" class="tab {% if period == 'month' %}active{% endif %}">本月</a>
+        <a href="?period=year" class="tab {% if period == 'year' %}active{% endif %}">本年</a>
+        <a href="?period=all" class="tab {% if period == 'all' %}active{% endif %}">总排名</a>
+    </div>
+
+    <div class="container">
+        <div class="toolbar">
+            <span class="info">
+                {% set period_labels = {'week': '本周', 'month': '本月', 'year': '本年', 'all': '累计'} %}
+                {{ period_labels.get(period, '累计') }}排名 · 共 {{ ranking|length }} 人
+            </span>
+            <a href="/export?period={{ period }}">导出 Excel</a>
+        </div>
+
+        {% if ranking %}
+        <ul class="ranking-list">
+            {% for r in ranking %}
+            <li class="ranking-item">
+                <div class="rank {% if r.rank == 1 %}rank-1{% elif r.rank == 2 %}rank-2{% elif r.rank == 3 %}rank-3{% else %}rank-other{% endif %}">
+                    {{ r.rank }}
+                </div>
+                <div class="avatar">{{ r.user_name[0] if r.user_name else '?' }}</div>
+                <div class="info-block">
+                    <div class="name">{{ r.user_name }}</div>
+                    <div class="meta">{{ r.period_pages }} 篇文章 · 累计 {{ r.total_chars }} 字</div>
+                </div>
+                <div class="stats">
+                    <div class="chars">{{ "{:,}".format(r.period_chars) }}</div>
+                    <div class="chars-label">字</div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty">
+            <div class="empty-icon">📝</div>
+            <p>暂无排名数据</p>
+            <p style="margin-top:8px; font-size:13px;">知识库刚启用，快去写第一篇文章吧！</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        数据每 6 小时自动更新 · 中建西北院医疗设计部
+    </div>
+</body>
+</html>

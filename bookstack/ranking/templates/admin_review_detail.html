@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>审核 #{{ sub.id }} - {{ sub.title }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, "PingFang SC", sans-serif; background: #f0f2f5; }
+        .header { background: linear-gradient(135deg, #d32f2f, #b71c1c); color: white; padding: 20px; text-align: center; }
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 16px; }
+        .meta-bar { background: white; border-radius: 10px; padding: 16px; margin-bottom: 16px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+        .meta-item { font-size: 13px; color: #666; }
+        .meta-item strong { color: #333; }
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .content-panel { background: white; border-radius: 10px; overflow: hidden; }
+        .panel-header { padding: 12px 16px; font-weight: 600; font-size: 14px; border-bottom: 1px solid #eee; }
+        .panel-header.current { background: #f8f9fa; color: #666; }
+        .panel-header.new { background: #e8f5e9; color: #2e7d32; }
+        .panel-body { padding: 16px; font-size: 14px; line-height: 1.8; max-height: 600px; overflow-y: auto; }
+        .panel-body table { border-collapse: collapse; width: 100%; }
+        .panel-body td, .panel-body th { border: 1px solid #ddd; padding: 6px 10px; font-size: 13px; }
+        .action-bar { background: white; border-radius: 10px; padding: 20px; display: flex; gap: 12px; align-items: flex-end; }
+        .action-bar textarea { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; min-height: 60px; }
+        .btn { padding: 10px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-approve { background: #4caf50; color: white; }
+        .btn-approve:hover { background: #388e3c; }
+        .btn-reject { background: #f44336; color: white; }
+        .btn-reject:hover { background: #d32f2f; }
+        .btn-back { background: #f0f2f5; color: #666; text-decoration: none; display: inline-block; }
+        .char-badge { display: inline-block; background: #e3f2fd; color: #1565c0; padding: 2px 10px; border-radius: 10px; font-size: 13px; font-weight: 600; }
+        @media (max-width: 768px) { .content-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>审核 #{{ sub.id }}</h1>
+    </div>
+    <div class="container">
+        <div class="meta-bar">
+            <div class="meta-item"><strong>提交人：</strong>{{ sub.user_name }} ({{ sub.user_email }})</div>
+            <div class="meta-item"><strong>标题：</strong>{{ sub.title }}</div>
+            <div class="meta-item"><strong>目标页面：</strong>{{ sub.target_page_name or '新增页面' }}</div>
+            <div class="meta-item"><strong>字数：</strong><span class="char-badge">{{ sub.char_count }} 字</span></div>
+            <div class="meta-item"><strong>提交时间：</strong>{{ sub.created_at[:16] }}</div>
+        </div>
+
+        <div class="content-grid">
+            {% if current_content %}
+            <div class="content-panel">
+                <div class="panel-header current">当前页面内容</div>
+                <div class="panel-body">{{ current_content|safe }}</div>
+            </div>
+            {% endif %}
+            <div class="content-panel" {% if not current_content %}style="grid-column: 1/-1"{% endif %}>
+                <div class="panel-header new">提交的修改内容</div>
+                <div class="panel-body">{{ sub.content|safe }}</div>
+            </div>
+        </div>
+
+        {% if sub.status == 'pending' %}
+        <div class="action-bar">
+            <textarea name="comment" id="comment" placeholder="审核意见（可选）"></textarea>
+            <form method="POST" action="/admin/approve/{{ sub.id }}" style="display:inline">
+                <input type="hidden" name="pwd" value="{{ pwd }}">
+                <input type="hidden" name="comment" id="approveComment">
+                <button type="submit" class="btn btn-approve" onclick="document.getElementById('approveComment').value=document.getElementById('comment').value">
+                    批准并发布
+                </button>
+            </form>
+            <form method="POST" action="/admin/reject/{{ sub.id }}" style="display:inline">
+                <input type="hidden" name="pwd" value="{{ pwd }}">
+                <input type="hidden" name="comment" id="rejectComment">
+                <button type="submit" class="btn btn-reject" onclick="document.getElementById('rejectComment').value=document.getElementById('comment').value">
+                    驳回
+                </button>
+            </form>
+            <a href="/admin/review?pwd={{ pwd }}" class="btn btn-back">返回列表</a>
+        </div>
+        {% else %}
+        <div class="action-bar">
+            <div style="flex:1">
+                <strong>状态：</strong>{{ sub.status }}
+                {% if sub.admin_comment %} · <strong>审核意见：</strong>{{ sub.admin_comment }}{% endif %}
+                {% if sub.reviewed_at %} · <strong>审核时间：</strong>{{ sub.reviewed_at[:16] }}{% endif %}
+            </div>
+            <a href="/admin/review?pwd={{ pwd }}" class="btn btn-back">返回列表</a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

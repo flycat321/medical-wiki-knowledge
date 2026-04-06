@@ -1,0 +1,63 @@
+services:
+  bookstack:
+    image: lscr.io/linuxserver/bookstack:latest
+    container_name: bookstack
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Shanghai
+      - APP_URL=${APP_URL}
+      - DB_HOST=bookstack_db
+      - DB_PORT=3306
+      - DB_USER=bookstack
+      - DB_PASS=${DB_PASS}
+      - DB_DATABASE=bookstackapp
+      - APP_LANG=zh_CN
+      - APP_AUTO_LANG_PUBLIC=true
+      - APP_KEY=base64:TVkD8SyDqLTxGnVr3VhdvA3mlOgNtmxaAbWUsct6LaM=
+      - FILE_UPLOAD_SIZE_LIMIT=100
+    volumes:
+      - ./bookstack_data:/config
+    ports:
+      - "6875:80"
+    restart: unless-stopped
+    depends_on:
+      bookstack_db:
+        condition: service_healthy
+
+  bookstack_db:
+    image: mysql:8.0
+    container_name: bookstack_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASS}
+      - MYSQL_DATABASE=bookstackapp
+      - MYSQL_USER=bookstack
+      - MYSQL_PASSWORD=${DB_PASS}
+      - TZ=Asia/Shanghai
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./db_data:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASS}"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  ranking:
+    build: ./ranking
+    container_name: bookstack_ranking
+    environment:
+      - BOOKSTACK_URL=http://bookstack:80
+      - BOOKSTACK_TOKEN_ID=${BS_TOKEN_ID}
+      - BOOKSTACK_TOKEN_SECRET=${BS_TOKEN_SECRET}
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./ranking_data:/app/data
+    ports:
+      - "6876:5000"
+    restart: unless-stopped
+    depends_on:
+      bookstack:
+        condition: service_started
